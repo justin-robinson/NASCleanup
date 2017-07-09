@@ -22,4 +22,15 @@ class PathHelper {
             System.out.println("Error listing files in " + p);
         }
     }
+
+    static void printDirectoryWithoutShortestFileName(Path p) {
+        try{
+            Files.list(p)
+                    .sorted(new PathComparator())
+                    .skip(1)
+                    .forEach(System.out::println);
+        } catch(Exception e) {
+            System.out.println("Error listing files in " + p);
+        }
+    }
 }

@@ -5,6 +5,9 @@ import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
 /**
  *
  */
@@ -32,14 +35,22 @@ class NasCleanup {
     }
 
     void cleanup() {
+        getFilteredDirectories().get().forEach(PathHelper::printShortestFileName);
+        getFilteredDirectories().get().forEach(PathHelper::printDirectoryWithoutShortestFileName);
+    }
 
-        try{
-            Files.list(rootDirectory)
-                    .filter(Files::isDirectory)
-                    .filter(PathHelper::hasMoreThanOneFile)
-                    .forEach(PathHelper::printShortestFileName);
-        } catch (Exception e){
-            System.out.println("Error listing files in " + rootDirectory);
-        }
+    private Supplier<Stream<Path>> getFilteredDirectories() {
+        return  () -> {
+
+            try {
+                return Files.list(rootDirectory)
+                        .filter(Files::isDirectory)
+                        .filter(PathHelper::hasMoreThanOneFile);
+            } catch (Exception e) {
+                System.out.println("Error listing files in " + rootDirectory);
+            }
+
+            return null;
+        };
     }
 }
